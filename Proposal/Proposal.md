@@ -21,7 +21,7 @@ Expected Graduation: September 2026
 ---
 
 <details>
-<summary style="font-size: 1.8em"><strong>Contents</strong></summary>
+<summary><h2>Contents</h2></summary>
 
 [**Mesa-LLM iteration to push to
 production**](#mesa-llm-iteration-to-push-to-production)
