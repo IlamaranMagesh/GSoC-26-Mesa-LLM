@@ -1,0 +1,56 @@
+A day with mesa-llm - my user journey
+
+- As a game enthusiast and interests in implementing AI in game worlds like AI as brains, conscious game world update, and complex emergent behaviour of entities in the game world, I'm thinking of implementing a prototype model using mesa-llm
+
+- Using it, I add agents that represent different entities like NPCs, world objects (trees, houses, etc.), environmental objects (wind, clouds, rain, etc.). Mainly I'm going to keep the world environment simpler and use only few different agents
+
+- Goal: The goal is to make a model for NPCs to interact with the surrounding environments and make it's own decisions provided with the environment and it's own state.
+
+- The theme is a medieval village with a market and I'm thinking of simulating the market and day-to-day life of an NPC
+ 
+- World Entities:
+
+- Some NPCs with different attributes both physical and mental
+- Few world objects like farm, market, some houses, tavern
+- Some environmental entities like rain, wind, sun, and daily news which is started by the bard NPC and spread by word-of-mouth (NPC -> NPC)
+
+NPCs
+- I'm initialising NPCs in bulk, randomly with attributes that I have in an array or JSON. This way I don't need to intialise one by one
+- Each NPCs will also have a name, a job and a house assigned to it.
+- I 'draw' and place my agents at the initialising phase. I can either place one or one or, provide a JSON object which which has the position of the agents.
+- I can also place the agents in random order but it can make some agents overlap a particular cell but not other objects.
+- using the mesa system to initialise my agents starting position in the grid
+- It is so smart that it places similar agents like houses or farms togethor and scatters agents like NPCs
+- I can view or log the current state of the agents (like walking of npc, raining of environment, etc.) by just clicking at the agent and seeing it's internal state attributes.
+- NPCs have current, short-term and long-term goals. These goals get updated and revised as the time goes.
+- The current goal changes frequently with the interaction of the environment. (like, an NPC is going to a house and sees fresh apples in the market, current goal changes to buy the apple but short-term goal remains to go to the house)
+- Ths NPCs will have beliefs, this will change as the environment changes. (eg: king is alive and it's believed my NPCs and when they get news that the king is dead, their belief is revised)
+- The Agents move from x,y to x1,y1 fluidly and not plotted in grid charts
+- I can view the interactions of the NPC
+- Each NPC is powered by AI models and they feel seamless without any latency issues
+
+
+World agents
+- The world agents can be interacted by the NPC and environmental agents.
+- All agents can interact with each other and I can control which and how it can interact without giving or mapping all the possible combinations
+- The world and other agents are aware of the time of the world. They know by because some variables are global and can be accessed by all other agents (like sun position in the sky which tells the time)
+- I can see my agents tree in the dashboard, like
+  
+  world agents (total - 80)
+  |
+  |_environment agents (total - 10)
+  | |
+  | |_farm1
+  | .
+  | . 
+  |_NPC (total - 70)
+    |
+    |_npc1
+    .
+    .
+   
+- I have a dashboard that can show me the usage of tokens, cost, latency, and GPU/CPU usage of my simualation
+- The system is so optimised that it can run local models at ease, with very low latency. The NPCs get instant result from the models.
+- They don't forget much and stick to their current, short and long-term goals
+- The framework allows me to choose my own quantised models
+- My simulation logs are stored in a structured format. All the agent/world changes are logged with time
