@@ -25,6 +25,8 @@ Expected Graduation: September 2026
 Listed some of my notable contributions. Entire list is linked in the
 [References](#13-references)
 
+<details>
+<summary><h4>Here</h4></summary>
 - My introduction -
   [mesa#2465](https://github.com/mesa/mesa/discussions/2465#discussioncomment-15938927)
 
@@ -79,8 +81,10 @@ Listed some of my notable contributions. Entire list is linked in the
 
   - [mesa#3516](https://github.com/mesa/mesa/issues/3516) (merged)
 
+</details>
+
 > [!NOTE]
-> **Note:** I will be updating this list with new contributions
+> I will be updating this list with new contributions
 
 ---
 
@@ -173,6 +177,8 @@ aims to enhance Mesa-LLM with **high stability, observability** and
 **low latency** without bringing any breaking changes to the existing
 code base.
 
+---
+
 ## 2. Motivation
 
 Generative AI is transforming paradigms\[1,2\] across multiple domains,
@@ -194,6 +200,8 @@ existing **documentation readability**, and optionally increasing
 **observability** by providing token usage, RPM and compute **metrics
 dashboard** for the researchers and developers, ultimately pushing the
 framework towards production readiness.
+
+---
 
 ## 3. Scope
 
@@ -270,20 +278,36 @@ Some questions that the proposal aim to address -
 
 ---
 
-## 4.Technical Approach / Methodology
+## 4. Technical Approach / Methodology
 
 To achieve a production ready status, this proposal addresses critical
 technical questions through a series of **User Stories** with **SLC** in
 mind.
 
 > [!NOTE]
-> ***Note:** All the user stories from the epics are written from my 
+> All the user stories from the epics are written from my 
 > perspective as a user of Mesa-LLM. Features that make the framework
-> **SLC** according to me.*
+> **SLC** according to me.
 
 ### 4.1. Process Flow
 
+```mermaid
+---
+config:
+  theme: neutral
+---
+flowchart TB
+    P1["<b>Phase 1: Code Review</b>"] -- "Type check, Test coverage, map Mesa 4.0 changes, and refactor if needed" --> P2["<b>Phase 2: Mesa-LLM Core Stabilization</b>"]
+    P2 -- Resolve critical bugs that break existing features --> P3["<b>Phase 3: Test-Driven Feature Engineering &amp; CI/CD update</b>"]
+    P3 -- Develop new features with TDD + update CI/CD pipelines for release --> P4["<b>Phase 4: Developer Experience</b>"]
+    P4 -- Generate automated docs, <br>tutorials, and migration guides --> Final(["<b>GSoC Report Submission</b>"])
 
+    style P1 fill:#FFCDD2,stroke:#333,stroke-width:2px
+    style P2 fill:#BBDEFB,stroke:#333,stroke-width:2px
+    style P3 fill:#FFF9C4,stroke:#333,stroke-width:2px
+    style P4 fill:#E1BEE7,stroke:#333,stroke-width:2px
+    style Final fill:#fff,stroke:#333,stroke-dasharray: 5 5
+```
 
 ### 4.2. Phase 1: Code Review
 
@@ -422,11 +446,12 @@ developed in Phase 2 to the pipeline.\
 
 - **[Documentation](#1-documentation):** Automating **Sphinx** validation
 builds to ensure that the docs are built with every code updates.\
-**Success Criteria** **-** Docs are built on every code changes.**Part
-2**
+**Success Criteria** **-** Docs are built on every code changes.
+
+**Part 2**
 
 > [!NOTE]
-> **Note** - I have prioritised some of the user stories that completes
+> I have prioritised some of the user stories that completes
 > the core functionalities of Mesa-LLM from my user journey and epics. It
 > is important to note that, subject to the maintainers' approval and
 > overall direction, implementations can be updated.
@@ -491,7 +516,30 @@ modifying the core **ModuleLLM** class to handle complex retry logic, we
 create a **FallbackBrain** that is activated when the first two layers of AI-brain fail.
 This FallbackBrain holds the default non-AI agent behaviours and providers decorators for custom default actions.
 
-![](media/image2.png)
+```mermaid
+flowchart LR
+ subgraph s2["Layer 1"]
+        A["Primary Brain<br>(simulation starts with<br>this model)"]
+  end
+ subgraph s3["Layer 2"]
+        B["Secondary Brain<br>(Backup model)"]
+  end
+ subgraph s4["Layer 3"]
+        C["Final Fallback<br>(Rule-Based Agent)"]
+  end
+ subgraph s1["Three Layer Fallback System"]
+        s2
+        s3
+        s4
+  end
+    s2 -- Failure --> s3
+    s3 -- Failure --> s4
+
+    style s2 fill:#FFF9C4
+    style s3 fill:#FFE0B2
+    style s4 fill:#FFCDD2
+    style s1 fill:#F8F8F8
+```
 
 The simulation model (Mesa.Model) attempts the
 primary brain (AI model) and, upon catching an exception, routes to the
@@ -509,7 +557,29 @@ the primary, and if rate-limited or fails, fall back to a local,
 quantised GGUF model running via Ollama/vLLM to keep the simulation
 moving without crashing.
 
-![](media/image3.png)
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+flowchart TB
+    C["Simulation run"] --> A["Agent Fails"]
+    A --> B["Activate Fallback Brain"]
+    B -- Pause Simulation --> D{"User/Config Decision: Proceed with Fallback?"}
+    D -- Yes --> E["Trigger Sub-brains based on Failure Type"]
+    E --> Res["Resume Simulation with Fallback Measures"]
+    D -- No --> F["Kill Simulation"]
+    F --> G["Generate Error Report & List Failure Reason"]
+    Res --> C
+
+    style C fill:#C8E6C9
+    style A fill:#FFCDD2
+    style D fill:#FFE0B2
+    style Res fill:#C8E6C9
+    style F fill:#FFCDD2
+    style G fill:#DCDCDC
+```
 
 **Control Flow:**
 
@@ -529,7 +599,6 @@ False**.
 generation step entirely in future ticks, relying purely on its
 **fallback_action** (a standard Python method or function) to interact
 with the Mesa grid.
-
 
 **B. The Default Fallback Action (Third Layer)**
 
@@ -579,7 +648,6 @@ inference time much better than Ollama or vLLM\[5\], providing
 significant performance upgrade without any breaking updates to the
 existing code.
 
-
 **Success Criteria:**
 
 If local inference, users provide custom config, or else default config
@@ -622,7 +690,48 @@ default, **SGLang** will be the runtime for local model inference as it
 supports even GGUF models, like Ollama. The user will also have an
 option to set their runtime in the config.
 
-![](media/image6.png)
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+graph TD
+    subgraph "<span style='font-size: 17px;'>Step A: Infrastructure (The Engine)</span>"
+        spacer1[" "]
+        spacer1 --- A[Load HF Weights / Safetensors]
+        A --> B[Launch SGLang Server]
+        B --> C{SGLang API Live?}
+        C -- Yes --> D[Port 3000: RadixAttention Active]
+    end
+
+    subgraph " "
+        D --> E[Configure LiteLLM config.yaml]
+        E --> F[Define Model Alias: 'mesa-agent']
+        F --> G[Set SGLang as Primary / Ollama as Fallback]
+        title["<span style='font-size: 17px;'>Step B: Orchestration<br/>(The Gateway)</span"]
+    end
+
+    subgraph " "
+        H[Start Mesa-LLM Simulation] --> J
+        I[Agent Decision Step] --> J[LiteLLM Proxy]
+        J -- Request --> D
+        D -- Cached Prefix + Tokens --> J
+        J -- JSON/Text Response --> K[Update Agent State]
+        K --> I
+        title1[" <span style='font-size: 17px;'>Step C: Execution<br/>(The Simulation)</span>"]
+        D --- H
+    end
+
+    style B fill:#f96,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style H fill:#dfd,stroke:#333,stroke-width:2px
+    style spacer1 fill:none,stroke:none
+    style title fill:none,stroke:none
+    style title1 fill:none,stroke:none
+    linkStyle 0 stroke:none
+        linkStyle 13 stroke:none
+```
 
 **New Modules & Files:**
 
@@ -662,7 +771,93 @@ architecture featuring automated fallback capabilities.
 
 **Current Architecture**
 
-![](media/image8.png)
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+flowchart TB
+ subgraph subGraph0["Class Definition"]
+    direction TB
+        Base["LLMAgent Base Class"]
+        A1Class["Agent1 Class"]
+        A2Class["Agent2 Class"]
+  end
+ subgraph subGraph1["<span style='white-space: nowrap'>Agent 1 Array (Similar Config)</span>"]
+    direction LR
+        M1_1[["ModuleLLM 1_1"]]
+        A1_1(["Agent1_1"])
+        M1_2[["ModuleLLM 1_2"]]
+        A1_2(["Agent1_2"])
+        M[["..."]]
+        A(["..."])
+        M1_N[["ModuleLLM 1_N"]]
+        A1_N(["Agent1_N"])
+  end
+ subgraph subGraph2["<span style='white-space: nowrap'>Agent 2 Array (Similar Config)</span>"]
+    direction LR
+        M2_1[["ModuleLLM 2_1"]]
+        A2_1(["Agent2_1"])
+        M2_2[["ModuleLLM 2_2"]]
+        A2_2(["Agent2_2"])
+        M1[["..."]]
+        A1(["..."])
+        M2_N[["ModuleLLM 2_N"]]
+        A2_N(["Agent2_N"])
+  end
+ subgraph subGraph3["<span style='white-space: nowrap'>Inference Engines (The Bottleneck)</span>"]
+    direction LR
+        S1[("Ollama Server")]
+        S2[("vLLM Server")]
+        S3[("SGLang Server")]
+  end
+    Base --> A1Class & A2Class
+    A1_1 --- M1_1
+    A1_2 --- M1_2
+    A1_N --- M1_N
+    A2_1 --- M2_1
+    A2_2 --- M2_2
+    A2_N --- M2_N
+    A --- M
+    A1 --- M1
+    A1Class -. instantiates ...-> subGraph1
+    A2Class -. instantiates ...-> subGraph2
+    M1_1 -- Separate HTTP Req --> S1
+    M1_2 -- Separate HTTP Req --> S1
+    M1_N -- Separate HTTP Req --> S1
+    M2_1 -- Separate HTTP Req --> S3
+    M2_2 -- Separate HTTP Req --> S3
+    M2_N -- Separate HTTP Req --> S3
+
+     Base:::baseClass
+     A1Class:::subClass
+     A2Class:::subClass
+     M1_1:::moduleInst
+     A1_1:::agentInst
+     M1_2:::moduleInst
+     A1_2:::agentInst
+     M:::moduleInst
+     A:::agentInst
+     M1_N:::moduleInst
+     A1_N:::agentInst
+     M2_1:::moduleInst
+     A2_1:::agentInst
+     M2_2:::moduleInst
+     A2_2:::agentInst
+     M1:::moduleInst
+     A1:::agentInst
+     M2_N:::moduleInst
+     A2_N:::agentInst
+     S1:::server
+     S2:::server
+     S3:::server
+    classDef baseClass fill:#f9f9f9,stroke:#333,stroke-width:2px
+    classDef subClass fill:#d4e6f1,stroke:#2874a6,stroke-width:2px
+    classDef agentInst fill:#d5f5e3,stroke:#239b56,stroke-width:1px
+    classDef moduleInst fill:#fcf3cf,stroke:#b7950b,stroke-width:1px,stroke-dasharray: 5 5
+    classDef server fill:#fadbd8,stroke:#e74c3c,stroke-width:2px
+```
 
 Each **LLMAgent** instance instantiates a separate **ModuleLLM**,
 despite identical configuration across agents. Consequently, every
@@ -672,7 +867,66 @@ performance.
 
 **Proposed Architecture (Controller Registry Pattern)**
 
-![](media/image9.png)
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+flowchart TB
+ subgraph Registry["ModuleLLM Registry (router_cache)"]
+    direction TB
+        R1[["SINGLE Shared Router Instance for similar configs"]]
+  end
+   subgraph A1Array["<span style='white-space: nowrap'>Agent 1 Group (e.g. Wolves)</span>"]
+    direction LR
+        A1_1(["Agent1_1"])
+        A1([".<br>.<br>.<br>"])
+        A1_N(["Agent1_N"])
+  end
+ subgraph Model["<span style='white-space: nowrap':> Mesa.Model (Simulation Environment)</span>"]
+    direction TB
+        Registry
+        M1[["ModuleLLM_1"]]
+        M2[["ModuleLLM_2"]]
+  end
+
+ subgraph A2Array["<span style='white-space: nowrap':>Agent 2 Group (e.g. Sheeps)</span>"]
+    direction LR
+        A2_1(["Agent2_1"])
+        A2([".<br>.<br>.<br>"])
+        A2_N(["Agent2_N"])
+  end
+ subgraph Backend["Inference Engine"]
+    direction LR
+        S1[("Local vLLM Server")]
+        S2[("Local SGLang Server")]
+        S3[("Local Ollama Server")]
+  end
+    M1 -- Hashes to same Config --> R1
+    M2 -- Hashes to same Config --> R1
+    M1 == Ref passed ==> A1Array
+    M2 == Ref passed ==> A2Array
+    R1 -- Single Coordinated HTTP Pipe --> S1 & S2 & S3
+
+     R1:::router
+     M1:::moduleInst
+     M2:::moduleInst
+     A1_1:::agentInst
+     A1_N:::agentInst
+     A2_1:::agentInst
+     A2_N:::agentInst
+     A2:::agentInst
+     A1:::agentInst
+     S1:::server
+     S2:::server
+     S3:::server
+    classDef modelClass fill:#f4f6f7,stroke:#2c3e50,stroke-width:2px
+    classDef agentInst fill:#d5f5e3,stroke:#239b56,stroke-width:1px
+    classDef moduleInst fill:#fcf3cf,stroke:#b7950b,stroke-width:1px
+    classDef router fill:#e8daef,stroke:#8e44ad,stroke-width:2px
+    classDef server fill:#fadbd8,stroke:#e74c3c,stroke-width:2px
+```
 
 **Sample code snippets**
 
@@ -696,10 +950,96 @@ backend models
 Below comparison provides a simple view of the different architectures
 from the current to proposed
 
+**Current Architecture**
 
-![](media/image12.png)
-  
-![](media/image13.png)
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+flowchart TB
+    %% Styling
+    classDef modelClass fill:#f4f6f7,stroke:#2c3e50,stroke-width:2px;
+    classDef agentInst fill:#d5f5e3,stroke:#239b56,stroke-width:1px;
+    classDef moduleInst fill:#fcf3cf,stroke:#b7950b,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef server fill:#fadbd8,stroke:#e74c3c,stroke-width:2px;
+
+    M[Mesa.Model]:::modelClass
+
+    subgraph Agents ["<span style='white-space: nowrap;'>Agent Array (1...N)</span>"]
+        direction TB
+        A1([Agent 1]):::agentInst
+        A2([Agent 2]):::agentInst
+        AN([Agent N]):::agentInst
+    end
+
+    subgraph Modules ["<span style='white-space: nowrap;'>ModuleLLM Array (1...N)</span>"]
+        direction TB
+        Mod1[[ModuleLLM 1]]:::moduleInst
+        Mod2[[ModuleLLM 2]]:::moduleInst
+        ModN[[ModuleLLM N]]:::moduleInst
+    end
+
+    M --> A1 & A2 & AN
+    
+    %% 1:1 Mapping (Redundant)
+    A1 --- Mod1
+    A2 --- Mod2
+    AN --- ModN
+
+    subgraph Backend ["Inference Engine"]
+        S1[(Local Server)]:::server
+    end
+
+    %% Redundant Pipes
+    Mod1 -->|HTTP Conn 1| S1
+    Mod2 -->|HTTP Conn 2| S1
+    ModN -->|HTTP Conn N| S1
+```
+
+**Proposed Architecuture**
+
+```mermaid
+---
+config:
+  theme: neutral
+---
+flowchart TB
+    %% Styling
+    classDef modelClass fill:#f4f6f7,stroke:#2c3e50,stroke-width:2px;
+    classDef agentInst fill:#d5f5e3,stroke:#239b56,stroke-width:1px;
+    classDef moduleInst fill:#fcf3cf,stroke:#b7950b,stroke-width:1px;
+    classDef router fill:#e8daef,stroke:#8e44ad,stroke-width:2px;
+    classDef server fill:#fadbd8,stroke:#e74c3c,stroke-width:2px;
+
+    M[Mesa.Model]:::modelClass
+    Mod[[Shared ModuleLLM]]:::moduleInst
+    R[[Shared Router]]:::router
+
+    subgraph Agents ["<span style='white-space: nowrap;'>Agent Array (1...N)</span>"]
+        direction TB
+        A1([Agent 1]):::agentInst
+        A2([Agent 2]):::agentInst
+        AN([Agent N]):::agentInst
+    end
+
+    %% Structural Flow
+    M --> Mod
+    A1 & A2 & AN -.->|Registry Lookup| R
+    
+    %% Agents share the reference
+    Mod ==>|Injected Reference| A1
+    Mod ==>|Injected Reference| A2
+    Mod ==>|Injected Reference| AN
+
+    subgraph Backend ["Inference Engine"]
+        S1[(Local Server)]:::server
+    end
+
+    %% Single Coordinated Pipe
+    R -- "Single Coordinated HTTP Pipe" --> S1
+```
 
 #### 3. Optional: Telemetry Dashboard
 
@@ -762,6 +1102,8 @@ The following improvements are proposed:
   5. Enhance the current **contribution workflow** docs with detailed, clear guidelines
   for **pull request (PR) triage** and **review processes**
 
+---
+
 ## 5. Deliverables
 
 This section contains all the listed deliverable across **Phase 1**
@@ -776,7 +1118,7 @@ defining their completion.
 | **3: CI/CD Update & Feature Development**     | **0.1.** Static analysis CI gate, E2E test coverage, automated documentation validation deployed to the CI/CD workflow.<br><br>**1.0. Robust LLM/API fallback routing** (Composite Pattern with retry + backup model) and deterministic agent fallback actions ensuring simulation stability.<br><br>**2.0.** High-performance execution and an extra layer of abstraction for AI model configuration with **Controller Registry Pattern** (shared ModuleLLM at Model level), reduced HTTP overhead, and advanced caching compatibility (RadixAttention / prefix caching).<br><br>**3.0. (Optional)** As a stretch goal, real-time native **telemetry dashboard** displaying token usage, latency, hardware metrics, and supporting RPM limits without interrupting the simulation loop. |
 | **4: Developer Experience**                   | Completed codebase/documentation audit, added live tutorials, architectural diagrams, published best practices (prompt engineering, cost/latency). Added ABM introduction and defined contributor workflow with PR triage.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
-
+---
 
 ## 6. Project Timeline
 
@@ -802,6 +1144,77 @@ deliverables.
 | Phase 3 - CI/CD & Feature Development | Weeks: ~7 to 8<br>Hours: 140 to 160 |
 | Phase 4 - Developer Experience        | Weeks: ~1 to 2<br>Hours: 20 to 40   |
 
+
+```mermaid
+---
+config:
+  theme: neutral
+---
+
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#A8D8EA",
+    "primaryTextColor": "#1F2933",
+    "primaryBorderColor": "#7FB3C8",
+
+    "lineColor": "#B0BEC5",
+    "secondaryColor": "#F6C1C7",
+    "tertiaryColor": "#CDE7BE",
+
+    "background": "#FAFAFA",
+    "mainBkg": "#FFFFFF",
+
+    "gridColor": "#E3E8EE",
+    "sectionBkgColor": "#F4F7FB",
+    "sectionBkgColor2": "#FDF6F8",
+
+    "taskTextColor": "#1F2933",
+    "taskBkgColor": "#A8D8EA",
+    "taskBorderColor": "#7FB3C8",
+
+    "activeTaskBkgColor": "#FFE0AC",
+    "activeTaskBorderColor": "#F4B183",
+
+    "doneTaskBkgColor": "#B5EAD7",
+    "doneTaskBorderColor": "#7DCFB6",
+
+    "critBkgColor": "#FFB7B2",
+    "critBorderColor": "#E57373"
+  }
+}}%%
+gantt
+    title Project Timeline
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %Y
+    tickInterval 1month
+
+    section Official GSoC
+    Official GSoC Period :done, g1, 2026-05-01, 2026-09-01
+
+    section Communtity <br> Bonding
+    Ongoing Communtity Bonding      :active, l1, 2026-02-01, 2026-05-01
+    Official Period                :done,   l2, 2026-05-01, 2026-05-25
+    Post-GSoC Community Bonding (Contd.)     :active, l3, 2026-05-25, 2026-10-31
+
+    section Contributions
+    (Ongoing) Phase 1 - Code Review  :active, r1, 2026-02-01, 2026-05-01
+    (Official) Phase 1 - Code Review [~1 to 2 weeks; (20-40 hrs)] :done,   r2, 2026-05-01, 2026-05-22
+    Phase 2 - Core Stabilisation [~3 to 4 weeks; (60-80 hrs)] :done,   s1, 2026-05-15, 2026-06-19
+    Phase 3 - CI/CD & Feature Dev [~7 to 8 weeks]; (140-160 hrs)           :done,   s2, 2026-06-12, 2026-08-14
+    Phase 4 - Developer Experience [~1 to 2 weeks]; (20-40 hrs)      :done,   s3, 2026-08-07, 2026-08-24
+    Post-GSoC Contributions & Maintenance (Contd.)    :active, r3, 2026-08-24, 2026-10-31
+
+    section Milestones
+    Mid term evaluation :milestone, m4, 2026-07-07, 0d
+    Project submission :milestone, m5, 2026-08-24, 0d
+
+    Phase 1 end : vert, v1, 2026-05-15, 
+    Phase 2 end : vert, v1, 2026-06-12, 
+    Phase 3 end : vert, v1, 2026-08-07, 
+```
+
+---
 
 ## 7. Personal Motivation
 
@@ -842,13 +1255,15 @@ Mesa is also an participating organisation.
 This is one of the moments where one might say,
 
 ```text
-"The threads of fate have finally begun to intertwine.\"\
-- Igor, Persona 5]{.mark}\
+"The threads of fate have finally begun to intertwine."
+- Igor, Persona 5
 ```
 
-And regardless of the GSoC, I'd still intend to contribute to the
+And regardless of the GSoC, I still intend to contribute to the
 project as it is directly supports my ongoing work in modelling and
 simulation.
+
+---
 
 ## 8. About Me
 
@@ -876,6 +1291,8 @@ thinking and a deep understanding of underlying concepts. Another key
 project involves a 3D simulation built using WebGL, where my experience
 with HTML5 Canvas, front-end development, and rendering techniques can
 contribute to optimising agent simulations within Mesa.
+
+---
 
 ## 9. Vision
 
@@ -907,6 +1324,8 @@ science, and broader communities to build, observe, and interact with
 dynamic AI-driven models, fundamentally expanding the scope of ABM to
 wider range of industries and applications.
 
+---
+
 ## 10. Commitments & Availability
 
 I am committed to contributing to the Mesa community **beyond the
@@ -919,6 +1338,8 @@ During the GSoC period, I will be available on a **part-time** basis,
 with an estimated commitment of approximately **350 hours** over the
 duration of the programme.
 
+---
+
 ## 11. Acknowledgments
 
 Special thanks to Steve Leach, a software engineering veteran with over
@@ -926,6 +1347,7 @@ Special thanks to Steve Leach, a software engineering veteran with over
 **SLC** approach. I am also grateful to Prof. Ruzanna Chitchyan, and Dr.
 Jo Hallett for their invaluable feedback and guidance.
 
+---
 
 ## 12. AI & Tool Usage
 
@@ -953,6 +1375,8 @@ proposed.
 
 **Prototyping:** I used GitHub Copilot to generate a mock-up prototype
 of my design in my forks of the project.
+
+---
 
 ## 13. References
 
