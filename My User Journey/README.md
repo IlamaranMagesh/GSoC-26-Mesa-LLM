@@ -7,8 +7,7 @@
 Since **AI-driven ABM** is a useful tool for my research and interests, I have created these documents to help me
 understand what an ideal tool should do.
 
-These documents were created before the proposal. They are living documents
-and will be updated as the project progresses.
+They are living documents and will be updated as the project progresses.
 
 My original user journey and stories are available in this txt file, [user-journey-mesa.txt](user-journey-mesa.txt). 
 
