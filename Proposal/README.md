@@ -31,6 +31,7 @@ Listed some of my notable contributions. Entire list is linked in the
 
 <details>
 <summary><h4>Here</h4></summary>
+
 - My introduction -
   [mesa#2465](https://github.com/mesa/mesa/discussions/2465#discussioncomment-15938927)
 
