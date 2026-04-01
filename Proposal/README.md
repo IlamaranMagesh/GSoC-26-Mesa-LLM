@@ -41,7 +41,7 @@ Listed some of my notable contributions. Entire list is linked in the
 - [My GSoC repo](https://github.com/IlamaranMagesh/GSoC-26-Mesa-LLM)
 
 - My talk about Mesa at nPlan: [Github](https://github.com/nplan-io/ml_paper_club?tab=readme-ov-file#paper-history:~:text=Maran%20%E2%80%94%20A%20Python%20framework%20for%20agent%2Dbased%20modelling%20(ABM)%3A%20Mesa%20and%20its%20extension%20Mesa%2DLLM%20(experimental)%20for%20AI%2Ddriven%20agents);
-[YouTube](https://youtu.be/sQZ8P65tPps?si=R8wkzOHDoBHtE37o&t=1152)
+[YouTube](https://youtu.be/sQZ8P65tPps?si=R8wkzOHDoBHtE37o&t=1152); [mesa#show&tell](https://github.com/mesa/mesa/discussions/3676)
 
 - Issue - [mesa#3516](https://github.com/mesa/mesa/issues/3516)
   (merged)
