@@ -1,3 +1,7 @@
+_This is a living document of my GSoC proposal. The submitted version is this, [GSoC-Proposal-Ilamaran-Magesh.pdf](#GSoC-Proposal-Ilamaran-Magesh.pdf)_
+
+---
+
 # GSoC Project Proposal
 
 ---
@@ -84,7 +88,7 @@ Listed some of my notable contributions. Entire list is linked in the
 </details>
 
 > [!NOTE]
-> I will be updating this list with new contributions
+> I will be updating this list the with new contributions
 
 ---
 
