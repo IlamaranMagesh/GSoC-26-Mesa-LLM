@@ -63,6 +63,8 @@ Listed some of my notable contributions. Entire list is linked in the
 - Q/A - [mesa#3517](https://github.com/mesa/mesa/discussions/3517)
   (answered)
 
+- Disucssion - My insights to [mesa#3485](https://github.com/mesa/mesa/discussions/3485#discussioncomment-16052499) 
+
 - Discussion -
   [mesa#3402](https://github.com/mesa/mesa/discussions/3402)
   (Proofreading and polishing docs)
