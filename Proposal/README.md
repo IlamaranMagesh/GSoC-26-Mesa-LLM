@@ -46,6 +46,9 @@ Listed some of my notable contributions. Entire list is linked in the
 - Issue - [mesa#3516](https://github.com/mesa/mesa/issues/3516)
   (merged)
 
+- Issue - [mesa#3687](https://github.com/mesa/mesa/issues/3687)
+  (open)
+
 - Issue - [mesa-llm#172](https://github.com/mesa/mesa-llm/issues/172)
   (open)
 
